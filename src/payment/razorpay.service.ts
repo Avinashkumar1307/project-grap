@@ -19,18 +19,35 @@ export interface VerifyPaymentDto {
 @Injectable()
 export class RazorpayService {
   private razorpay: Razorpay;
+  private isConfigured: boolean = false;
 
   constructor(private configService: ConfigService) {
-    this.razorpay = new Razorpay({
-      key_id: this.configService.get('RAZORPAY_KEY_ID'),
-      key_secret: this.configService.get('RAZORPAY_KEY_SECRET'),
-    });
+    const keyId = this.configService.get('RAZORPAY_KEY_ID');
+    const keySecret = this.configService.get('RAZORPAY_KEY_SECRET');
+
+    if (keyId && keySecret) {
+      this.razorpay = new Razorpay({
+        key_id: keyId,
+        key_secret: keySecret,
+      });
+      this.isConfigured = true;
+    } else {
+      console.warn('⚠️  Razorpay credentials not configured. Payment features will be disabled.');
+      console.warn('   Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to your .env file');
+    }
+  }
+
+  private checkConfigured() {
+    if (!this.isConfigured) {
+      throw new Error('Razorpay is not configured. Please add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to your .env file');
+    }
   }
 
   /**
    * Create a Razorpay order
    */
   async createOrder(createOrderDto: CreateOrderDto) {
+    this.checkConfigured();
     const options = {
       amount: Math.round(createOrderDto.amount * 100), // Razorpay expects amount in paise
       currency: createOrderDto.currency || 'INR',
@@ -50,6 +67,7 @@ export class RazorpayService {
    * Verify payment signature
    */
   verifyPaymentSignature(verifyPaymentDto: VerifyPaymentDto): boolean {
+    this.checkConfigured();
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = verifyPaymentDto;
 
     const sign = razorpay_order_id + '|' + razorpay_payment_id;
@@ -65,6 +83,7 @@ export class RazorpayService {
    * Fetch payment details
    */
   async getPayment(paymentId: string) {
+    this.checkConfigured();
     try {
       return await this.razorpay.payments.fetch(paymentId);
     } catch (error) {
@@ -76,6 +95,7 @@ export class RazorpayService {
    * Fetch order details
    */
   async getOrder(orderId: string) {
+    this.checkConfigured();
     try {
       return await this.razorpay.orders.fetch(orderId);
     } catch (error) {
@@ -87,6 +107,7 @@ export class RazorpayService {
    * Capture payment
    */
   async capturePayment(paymentId: string, amount: number, currency: string = 'INR') {
+    this.checkConfigured();
     try {
       return await this.razorpay.payments.capture(paymentId, Math.round(amount * 100), currency);
     } catch (error) {
@@ -98,6 +119,7 @@ export class RazorpayService {
    * Create refund
    */
   async createRefund(paymentId: string, amount?: number) {
+    this.checkConfigured();
     try {
       const options: any = {};
       if (amount) {
@@ -113,6 +135,7 @@ export class RazorpayService {
    * Get refund details
    */
   async getRefund(refundId: string) {
+    this.checkConfigured();
     try {
       return await this.razorpay.refunds.fetch(refundId);
     } catch (error) {
