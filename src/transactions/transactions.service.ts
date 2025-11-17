@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
-import { Transaction, TransactionStatus, TransactionType } from './entities/transaction.entity';
+import { Transaction, TransactionStatus } from './entities/transaction.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
@@ -12,7 +12,10 @@ export class TransactionsService {
     private transactionsRepository: Repository<Transaction>,
   ) {}
 
-  async create(createTransactionDto: CreateTransactionDto, userId: string): Promise<Transaction> {
+  async create(
+    createTransactionDto: CreateTransactionDto,
+    userId: string,
+  ): Promise<Transaction> {
     const transaction = this.transactionsRepository.create({
       ...createTransactionDto,
       userId,
@@ -72,13 +75,20 @@ export class TransactionsService {
     });
   }
 
-  async update(id: string, updateTransactionDto: UpdateTransactionDto): Promise<Transaction> {
+  async update(
+    id: string,
+    updateTransactionDto: UpdateTransactionDto,
+  ): Promise<Transaction> {
     const transaction = await this.findOne(id);
     Object.assign(transaction, updateTransactionDto);
     return await this.transactionsRepository.save(transaction);
   }
 
-  async updateStatus(id: string, status: TransactionStatus, failureReason?: string): Promise<Transaction> {
+  async updateStatus(
+    id: string,
+    status: TransactionStatus,
+    failureReason?: string,
+  ): Promise<Transaction> {
     const transaction = await this.findOne(id);
     transaction.status = status;
     if (failureReason) transaction.failureReason = failureReason;
@@ -106,7 +116,9 @@ export class TransactionsService {
       .createQueryBuilder('transaction')
       .select('SUM(transaction.amount)', 'sum')
       .where(userId ? 'transaction.userId = :userId' : '1=1', { userId })
-      .andWhere('transaction.status = :status', { status: TransactionStatus.COMPLETED })
+      .andWhere('transaction.status = :status', {
+        status: TransactionStatus.COMPLETED,
+      })
       .getRawOne();
 
     return {

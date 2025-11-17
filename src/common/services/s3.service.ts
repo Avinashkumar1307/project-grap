@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -19,7 +23,10 @@ export class S3Service {
     this.bucketName = this.configService.get('AWS_S3_BUCKET_NAME');
   }
 
-  async uploadFile(file: Express.Multer.File, folder: string = 'uploads'): Promise<string> {
+  async uploadFile(
+    file: Express.Multer.File,
+    folder: string = 'uploads',
+  ): Promise<string> {
     const fileExtension = file.originalname.split('.').pop();
     const fileName = `${folder}/${uuidv4()}.${fileExtension}`;
 
@@ -38,7 +45,10 @@ export class S3Service {
     return `https://${this.bucketName}.s3.${region}.amazonaws.com/${fileName}`;
   }
 
-  async uploadMultipleFiles(files: Express.Multer.File[], folder: string = 'uploads'): Promise<string[]> {
+  async uploadMultipleFiles(
+    files: Express.Multer.File[],
+    folder: string = 'uploads',
+  ): Promise<string[]> {
     const uploadPromises = files.map((file) => this.uploadFile(file, folder));
     return await Promise.all(uploadPromises);
   }

@@ -32,14 +32,20 @@ export class RazorpayService {
       });
       this.isConfigured = true;
     } else {
-      console.warn('⚠️  Razorpay credentials not configured. Payment features will be disabled.');
-      console.warn('   Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to your .env file');
+      console.warn(
+        '⚠️  Razorpay credentials not configured. Payment features will be disabled.',
+      );
+      console.warn(
+        '   Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to your .env file',
+      );
     }
   }
 
   private checkConfigured() {
     if (!this.isConfigured) {
-      throw new Error('Razorpay is not configured. Please add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to your .env file');
+      throw new Error(
+        'Razorpay is not configured. Please add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to your .env file',
+      );
     }
   }
 
@@ -68,7 +74,8 @@ export class RazorpayService {
    */
   verifyPaymentSignature(verifyPaymentDto: VerifyPaymentDto): boolean {
     this.checkConfigured();
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = verifyPaymentDto;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      verifyPaymentDto;
 
     const sign = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSign = crypto
@@ -106,10 +113,18 @@ export class RazorpayService {
   /**
    * Capture payment
    */
-  async capturePayment(paymentId: string, amount: number, currency: string = 'INR') {
+  async capturePayment(
+    paymentId: string,
+    amount: number,
+    currency: string = 'INR',
+  ) {
     this.checkConfigured();
     try {
-      return await this.razorpay.payments.capture(paymentId, Math.round(amount * 100), currency);
+      return await this.razorpay.payments.capture(
+        paymentId,
+        Math.round(amount * 100),
+        currency,
+      );
     } catch (error) {
       throw new Error(`Failed to capture payment: ${error.message}`);
     }

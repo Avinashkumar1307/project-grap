@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, Between, In } from 'typeorm';
+import { Repository, Like, Between } from 'typeorm';
 import { Project, ProjectStatus } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -13,7 +17,10 @@ export class ProjectsService {
     private projectsRepository: Repository<Project>,
   ) {}
 
-  async create(createProjectDto: CreateProjectDto, sellerId: string): Promise<Project> {
+  async create(
+    createProjectDto: CreateProjectDto,
+    sellerId: string,
+  ): Promise<Project> {
     const project = this.projectsRepository.create({
       ...createProjectDto,
       sellerId,
@@ -22,7 +29,15 @@ export class ProjectsService {
   }
 
   async findAll(filterDto: FilterProjectDto) {
-    const { category, status, search, minPrice, maxPrice, tags, page = 1, limit = 10 } = filterDto;
+    const {
+      category,
+      status,
+      search,
+      minPrice,
+      maxPrice,
+      page = 1,
+      limit = 10,
+    } = filterDto;
 
     const where: any = {};
 
@@ -91,7 +106,11 @@ export class ProjectsService {
     });
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto, userId: string): Promise<Project> {
+  async update(
+    id: string,
+    updateProjectDto: UpdateProjectDto,
+    userId: string,
+  ): Promise<Project> {
     const project = await this.findOne(id);
 
     if (project.sellerId !== userId) {

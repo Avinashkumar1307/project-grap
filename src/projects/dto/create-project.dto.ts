@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsEnum, IsNumber, IsOptional, IsArray, IsUrl, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsUrl,
+  Min,
+} from 'class-validator';
 import { ProjectCategory, ProjectStatus } from '../entities/project.entity';
 
 export class CreateProjectDto {

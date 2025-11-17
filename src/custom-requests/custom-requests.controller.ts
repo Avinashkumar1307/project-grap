@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Request,
-  Query,
 } from '@nestjs/common';
 import { CustomRequestsService } from './custom-requests.service';
 import { CreateCustomRequestDto } from './dto/create-custom-request.dto';
@@ -22,8 +21,14 @@ export class CustomRequestsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createCustomRequestDto: CreateCustomRequestDto, @Request() req) {
-    return this.customRequestsService.create(createCustomRequestDto, req.user.id);
+  create(
+    @Body() createCustomRequestDto: CreateCustomRequestDto,
+    @Request() req,
+  ) {
+    return this.customRequestsService.create(
+      createCustomRequestDto,
+      req.user.id,
+    );
   }
 
   @Get()
@@ -65,14 +70,25 @@ export class CustomRequestsController {
     @Request() req,
   ) {
     const isAdmin = req.user.role === 'admin';
-    return this.customRequestsService.update(id, updateCustomRequestDto, req.user.id, isAdmin);
+    return this.customRequestsService.update(
+      id,
+      updateCustomRequestDto,
+      req.user.id,
+      isAdmin,
+    );
   }
 
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard)
   updateStatus(
     @Param('id') id: string,
-    @Body() body: { status: RequestStatus; adminNotes?: string; quotedPrice?: number; estimatedDays?: number },
+    @Body()
+    body: {
+      status: RequestStatus;
+      adminNotes?: string;
+      quotedPrice?: number;
+      estimatedDays?: number;
+    },
   ) {
     return this.customRequestsService.updateStatus(
       id,

@@ -11,7 +11,12 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(email: string, password: string, firstName?: string, lastName?: string): Promise<User> {
+  async create(
+    email: string,
+    password: string,
+    firstName?: string,
+    lastName?: string,
+  ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = this.usersRepository.create({
       email,
@@ -34,7 +39,12 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { id } });
   }
 
-  async createGoogleUser(email: string, googleId: string, firstName?: string, lastName?: string): Promise<User> {
+  async createGoogleUser(
+    email: string,
+    googleId: string,
+    firstName?: string,
+    lastName?: string,
+  ): Promise<User> {
     const user = this.usersRepository.create({
       email,
       googleId,
@@ -45,11 +55,17 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+  async validatePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  async updateRefreshToken(userId: string, refreshToken: string | null): Promise<void> {
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string | null,
+  ): Promise<void> {
     await this.usersRepository.update(userId, { refreshToken });
   }
 }

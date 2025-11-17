@@ -3,7 +3,9 @@ import { CreateCustomRequestDto } from './create-custom-request.dto';
 import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { RequestStatus } from '../entities/custom-request.entity';
 
-export class UpdateCustomRequestDto extends PartialType(CreateCustomRequestDto) {
+export class UpdateCustomRequestDto extends PartialType(
+  CreateCustomRequestDto,
+) {
   @IsEnum(RequestStatus)
   @IsOptional()
   status?: RequestStatus;

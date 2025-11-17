@@ -24,7 +24,13 @@ import { GoogleStrategy } from './strategies/google.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RefreshTokenStrategy, LocalStrategy, GoogleStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    RefreshTokenStrategy,
+    LocalStrategy,
+    GoogleStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

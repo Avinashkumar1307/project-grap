@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 export enum RequestStatus {
@@ -8,7 +16,7 @@ export enum RequestStatus {
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   REJECTED = 'rejected',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum ProjectType {
@@ -18,7 +26,7 @@ export enum ProjectType {
   DESKTOP = 'desktop',
   FULLSTACK = 'fullstack',
   AI = 'ai',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 @Entity('custom_requests')
@@ -60,7 +68,7 @@ export class CustomRequest {
   @Column({
     type: 'enum',
     enum: RequestStatus,
-    default: RequestStatus.PENDING
+    default: RequestStatus.PENDING,
   })
   status: RequestStatus;
 

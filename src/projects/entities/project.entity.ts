@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Transaction } from '../../transactions/entities/transaction.entity';
 
@@ -9,14 +18,14 @@ export enum ProjectCategory {
   DESKTOP = 'desktop',
   FULLSTACK = 'fullstack',
   AI = 'ai',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 export enum ProjectStatus {
   ACTIVE = 'active',
   SOLD_OUT = 'sold_out',
   DRAFT = 'draft',
-  ARCHIVED = 'archived'
+  ARCHIVED = 'archived',
 }
 
 @Entity('projects')
@@ -33,7 +42,7 @@ export class Project {
   @Column({
     type: 'enum',
     enum: ProjectCategory,
-    default: ProjectCategory.OTHER
+    default: ProjectCategory.OTHER,
   })
   category: ProjectCategory;
 
@@ -73,7 +82,7 @@ export class Project {
   @Column({
     type: 'enum',
     enum: ProjectStatus,
-    default: ProjectStatus.DRAFT
+    default: ProjectStatus.DRAFT,
   })
   status: ProjectStatus;
 

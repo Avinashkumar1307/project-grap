@@ -1,11 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Project } from '../../projects/entities/project.entity';
 
 export enum TransactionType {
   PROJECT_PURCHASE = 'project_purchase',
   CUSTOM_REQUEST_PAYMENT = 'custom_request_payment',
-  REFUND = 'refund'
+  REFUND = 'refund',
 }
 
 export enum TransactionStatus {
@@ -14,7 +22,7 @@ export enum TransactionStatus {
   COMPLETED = 'completed',
   FAILED = 'failed',
   CANCELLED = 'cancelled',
-  REFUNDED = 'refunded'
+  REFUNDED = 'refunded',
 }
 
 export enum PaymentMethod {
@@ -22,7 +30,7 @@ export enum PaymentMethod {
   CREDIT_CARD = 'credit_card',
   DEBIT_CARD = 'debit_card',
   NET_BANKING = 'net_banking',
-  WALLET = 'wallet'
+  WALLET = 'wallet',
 }
 
 @Entity('transactions')
@@ -62,14 +70,14 @@ export class Transaction {
   @Column({
     type: 'enum',
     enum: TransactionStatus,
-    default: TransactionStatus.PENDING
+    default: TransactionStatus.PENDING,
   })
   status: TransactionStatus;
 
   @Column({
     type: 'enum',
     enum: PaymentMethod,
-    nullable: true
+    nullable: true,
   })
   paymentMethod: PaymentMethod;
 

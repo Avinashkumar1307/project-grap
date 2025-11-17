@@ -1,6 +1,15 @@
-import { IsString, IsNotEmpty, IsEnum, IsNumber, IsOptional, IsArray, IsDate, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsDate,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { ProjectType, RequestStatus } from '../entities/custom-request.entity';
+import { ProjectType } from '../entities/custom-request.entity';
 
 export class CreateCustomRequestDto {
   @IsString()

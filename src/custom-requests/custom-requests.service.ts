@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CustomRequest, RequestStatus } from './entities/custom-request.entity';
@@ -12,7 +16,10 @@ export class CustomRequestsService {
     private customRequestsRepository: Repository<CustomRequest>,
   ) {}
 
-  async create(createCustomRequestDto: CreateCustomRequestDto, userId: string): Promise<CustomRequest> {
+  async create(
+    createCustomRequestDto: CreateCustomRequestDto,
+    userId: string,
+  ): Promise<CustomRequest> {
     const customRequest = this.customRequestsRepository.create({
       ...createCustomRequestDto,
       userId,
@@ -62,7 +69,12 @@ export class CustomRequestsService {
     });
   }
 
-  async update(id: string, updateCustomRequestDto: UpdateCustomRequestDto, userId: string, isAdmin?: boolean): Promise<CustomRequest> {
+  async update(
+    id: string,
+    updateCustomRequestDto: UpdateCustomRequestDto,
+    userId: string,
+    isAdmin?: boolean,
+  ): Promise<CustomRequest> {
     const customRequest = await this.findOne(id);
 
     if (!isAdmin && customRequest.userId !== userId) {
@@ -73,7 +85,13 @@ export class CustomRequestsService {
     return await this.customRequestsRepository.save(customRequest);
   }
 
-  async updateStatus(id: string, status: RequestStatus, adminNotes?: string, quotedPrice?: number, estimatedDays?: number): Promise<CustomRequest> {
+  async updateStatus(
+    id: string,
+    status: RequestStatus,
+    adminNotes?: string,
+    quotedPrice?: number,
+    estimatedDays?: number,
+  ): Promise<CustomRequest> {
     const customRequest = await this.findOne(id);
 
     customRequest.status = status;
@@ -91,8 +109,13 @@ export class CustomRequestsService {
       throw new ForbiddenException('You can only delete your own requests');
     }
 
-    if (customRequest.status !== RequestStatus.PENDING && customRequest.status !== RequestStatus.CANCELLED) {
-      throw new ForbiddenException('You can only delete pending or cancelled requests');
+    if (
+      customRequest.status !== RequestStatus.PENDING &&
+      customRequest.status !== RequestStatus.CANCELLED
+    ) {
+      throw new ForbiddenException(
+        'You can only delete pending or cancelled requests',
+      );
     }
 
     await this.customRequestsRepository.remove(customRequest);
@@ -100,9 +123,15 @@ export class CustomRequestsService {
 
   async getStats() {
     const total = await this.customRequestsRepository.count();
-    const pending = await this.customRequestsRepository.count({ where: { status: RequestStatus.PENDING } });
-    const inProgress = await this.customRequestsRepository.count({ where: { status: RequestStatus.IN_PROGRESS } });
-    const completed = await this.customRequestsRepository.count({ where: { status: RequestStatus.COMPLETED } });
+    const pending = await this.customRequestsRepository.count({
+      where: { status: RequestStatus.PENDING },
+    });
+    const inProgress = await this.customRequestsRepository.count({
+      where: { status: RequestStatus.IN_PROGRESS },
+    });
+    const completed = await this.customRequestsRepository.count({
+      where: { status: RequestStatus.COMPLETED },
+    });
 
     return {
       total,

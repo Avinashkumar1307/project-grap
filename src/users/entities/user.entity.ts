@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { Purchase } from '../../purchases/entities/purchase.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { CustomRequest } from '../../custom-requests/entities/custom-request.entity';
@@ -7,7 +14,7 @@ import { Transaction } from '../../transactions/entities/transaction.entity';
 export enum UserRole {
   USER = 'user',
   SELLER = 'seller',
-  ADMIN = 'admin'
+  ADMIN = 'admin',
 }
 
 @Entity('users')
@@ -36,7 +43,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserRole,
-    default: UserRole.USER
+    default: UserRole.USER,
   })
   role: UserRole;
 

@@ -105,7 +105,11 @@ export class ProjectsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() updateProjectDto: UpdateProjectDto,
+    @Request() req,
+  ) {
     return this.projectsService.update(id, updateProjectDto, req.user.id);
   }
 

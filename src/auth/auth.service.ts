@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -75,9 +80,13 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
     if (user && user.password) {
-      const isPasswordValid = await this.usersService.validatePassword(password, user.password);
+      const isPasswordValid = await this.usersService.validatePassword(
+        password,
+        user.password,
+      );
       if (isPasswordValid) {
-        const { password, ...result } = user;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _, ...result } = user;
         return result;
       }
     }
@@ -94,7 +103,12 @@ export class AuthService {
     let user = await this.usersService.findByEmail(email);
 
     if (!user) {
-      user = await this.usersService.createGoogleUser(email, googleId, firstName, lastName);
+      user = await this.usersService.createGoogleUser(
+        email,
+        googleId,
+        firstName,
+        lastName,
+      );
     } else if (!user.googleId) {
       // Link Google account to existing user
       user.googleId = googleId;
@@ -122,7 +136,10 @@ export class AuthService {
       throw new ForbiddenException('Access Denied');
     }
 
-    const refreshTokenMatches = await bcrypt.compare(refreshToken, user.refreshToken);
+    const refreshTokenMatches = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
     if (!refreshTokenMatches) {
       throw new ForbiddenException('Access Denied');
     }

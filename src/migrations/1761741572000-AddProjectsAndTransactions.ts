@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddProjectsAndTransactions1761741572000 implements MigrationInterface {
+export class AddProjectsAndTransactions1761741572000
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add new columns to users table
     await queryRunner.query(`
@@ -91,23 +93,45 @@ export class AddProjectsAndTransactions1761741572000 implements MigrationInterfa
     `);
 
     // Create indexes for better query performance
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_projects_category" ON "projects" ("category")`);
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_projects_status" ON "projects" ("status")`);
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_projects_sellerId" ON "projects" ("sellerId")`);
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_custom_requests_userId" ON "custom_requests" ("userId")`);
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_custom_requests_status" ON "custom_requests" ("status")`);
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_transactions_userId" ON "transactions" ("userId")`);
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_transactions_projectId" ON "transactions" ("projectId")`);
-    await queryRunner.query(`CREATE INDEX IF NOT EXISTS "IDX_transactions_status" ON "transactions" ("status")`);
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_projects_category" ON "projects" ("category")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_projects_status" ON "projects" ("status")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_projects_sellerId" ON "projects" ("sellerId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_custom_requests_userId" ON "custom_requests" ("userId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_custom_requests_status" ON "custom_requests" ("status")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_transactions_userId" ON "transactions" ("userId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_transactions_projectId" ON "transactions" ("projectId")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX IF NOT EXISTS "IDX_transactions_status" ON "transactions" ("status")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // Drop indexes
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_transactions_status"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_transactions_projectId"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_transactions_projectId"`,
+    );
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_transactions_userId"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_custom_requests_status"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_custom_requests_userId"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_custom_requests_status"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_custom_requests_userId"`,
+    );
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_projects_sellerId"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_projects_status"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_projects_category"`);

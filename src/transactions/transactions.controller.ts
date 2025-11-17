@@ -14,7 +14,10 @@ import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { TransactionStatus, TransactionType } from './entities/transaction.entity';
+import {
+  TransactionStatus,
+  TransactionType,
+} from './entities/transaction.entity';
 import { RazorpayService } from '../payment/razorpay.service';
 import { ProjectsService } from '../projects/projects.service';
 
@@ -86,7 +89,10 @@ export class TransactionsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTransactionDto: UpdateTransactionDto,
+  ) {
     return this.transactionsService.update(id, updateTransactionDto);
   }
 
@@ -96,7 +102,11 @@ export class TransactionsController {
     @Param('id') id: string,
     @Body() body: { status: TransactionStatus; failureReason?: string },
   ) {
-    return this.transactionsService.updateStatus(id, body.status, body.failureReason);
+    return this.transactionsService.updateStatus(
+      id,
+      body.status,
+      body.failureReason,
+    );
   }
 
   // Razorpay Payment Integration Endpoints
@@ -116,9 +126,13 @@ export class TransactionsController {
       description = `Purchase of ${project.title}`;
     } else if (body.customRequestId) {
       // Get custom request amount (you'll need to implement this)
-      throw new BadRequestException('Custom request payment not yet implemented');
+      throw new BadRequestException(
+        'Custom request payment not yet implemented',
+      );
     } else {
-      throw new BadRequestException('Either projectId or customRequestId is required');
+      throw new BadRequestException(
+        'Either projectId or customRequestId is required',
+      );
     }
 
     // Create Razorpay order
@@ -137,7 +151,9 @@ export class TransactionsController {
       {
         projectId: body.projectId,
         customRequestId: body.customRequestId,
-        type: body.projectId ? TransactionType.PROJECT_PURCHASE : TransactionType.CUSTOM_REQUEST_PAYMENT,
+        type: body.projectId
+          ? TransactionType.PROJECT_PURCHASE
+          : TransactionType.CUSTOM_REQUEST_PAYMENT,
         amount,
         description,
       },
@@ -169,7 +185,6 @@ export class TransactionsController {
       razorpay_payment_id: string;
       razorpay_signature: string;
     },
-    @Request() req,
   ) {
     // Verify signature
     const isValid = this.razorpayService.verifyPaymentSignature({
@@ -189,14 +204,19 @@ export class TransactionsController {
     }
 
     // Get payment details from Razorpay
-    const payment = await this.razorpayService.getPayment(body.razorpay_payment_id);
+    const payment = await this.razorpayService.getPayment(
+      body.razorpay_payment_id,
+    );
 
     // Update transaction
-    const transaction = await this.transactionsService.update(body.transactionId, {
-      paymentGatewayPaymentId: body.razorpay_payment_id,
-      status: TransactionStatus.COMPLETED,
-      metadata: payment,
-    });
+    const transaction = await this.transactionsService.update(
+      body.transactionId,
+      {
+        paymentGatewayPaymentId: body.razorpay_payment_id,
+        status: TransactionStatus.COMPLETED,
+        metadata: payment,
+      },
+    );
 
     // If it's a project purchase, increment sales count
     if (transaction.projectId) {
@@ -235,7 +255,10 @@ export class TransactionsController {
 
   @Post(':id/refund')
   @UseGuards(JwtAuthGuard)
-  async createRefund(@Param('id') id: string, @Body() body: { amount?: number }) {
+  async createRefund(
+    @Param('id') id: string,
+    @Body() body: { amount?: number },
+  ) {
     const transaction = await this.transactionsService.findOne(id);
 
     if (!transaction.paymentGatewayPaymentId) {
