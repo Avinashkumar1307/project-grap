@@ -209,13 +209,33 @@ jobs:
           HOST: ${{ secrets.EC2_HOST }}
           USERNAME: ${{ secrets.EC2_USERNAME }}
           PORT: ${{ secrets.EC2_SSH_PORT }}
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          ssh -i ~/.ssh/deploy_key -p ${PORT} ${USERNAME}@${HOST} << 'ENDSSH'
+          ssh -i ~/.ssh/deploy_key -p ${PORT} ${USERNAME}@${HOST} bash -s << EOF
             set -e
-            cd /home/${USERNAME}/project-grap
 
-            echo "📥 Pulling latest code..."
-            git pull origin master
+            # Create project directory if it doesn't exist
+            if [ ! -d ~/project-grap ]; then
+              echo "📁 Creating project directory..."
+              mkdir -p ~/project-grap
+              cd ~/project-grap
+
+              echo "📥 Cloning repository..."
+              git clone https://github.com/${GITHUB_REPOSITORY}.git .
+
+              echo "📝 Setting up environment file..."
+              if [ ! -f .env ]; then
+                cp .env.production.example .env
+                echo "⚠️  WARNING: Please configure .env file with production values!"
+              fi
+
+              echo "🐋 Setting up docker-compose..."
+              cp docker-compose.prod.yml docker-compose.yml
+            else
+              cd ~/project-grap
+              echo "📥 Pulling latest code..."
+              git pull origin master
+            fi
 
             echo "🐋 Pulling latest Docker images..."
             docker-compose pull
@@ -233,4 +253,4 @@ jobs:
             docker-compose ps
 
             echo "✅ Deployment completed successfully!"
-          ENDSSH
+          EOF

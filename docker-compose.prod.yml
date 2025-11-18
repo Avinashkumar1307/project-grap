@@ -23,7 +23,7 @@ services:
 
   # NestJS Application
   app:
-    image: ${DOCKER_USERNAME}/project-grap:latest
+    image: ${DOCKER_USERNAME:-your-docker-username}/project-grap:latest
     container_name: project-grap-app
     restart: unless-stopped
     ports:
