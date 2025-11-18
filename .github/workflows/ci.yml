@@ -197,30 +197,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_SSH_PORT }}
-          script: |
-            cd /home/${{ secrets.EC2_USERNAME }}/project-grap
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-            # Pull latest changes
+      - name: Deploy to EC2
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          USERNAME: ${{ secrets.EC2_USERNAME }}
+          PORT: ${{ secrets.EC2_SSH_PORT }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${PORT} ${USERNAME}@${HOST} << 'ENDSSH'
+            set -e
+            cd /home/${USERNAME}/project-grap
+
+            echo "📥 Pulling latest code..."
             git pull origin master
 
-            # Pull latest Docker images
+            echo "🐋 Pulling latest Docker images..."
             docker-compose pull
 
-            # Stop and remove old containers
+            echo "⏬ Stopping current containers..."
             docker-compose down
 
-            # Start containers with new images
+            echo "⏫ Starting containers with new images..."
             docker-compose up -d
 
-            # Clean up old images
+            echo "🧹 Cleaning up old Docker images..."
             docker image prune -af
 
-            # Show running containers
+            echo "📊 Container status:"
             docker-compose ps
+
+            echo "✅ Deployment completed successfully!"
+          ENDSSH
