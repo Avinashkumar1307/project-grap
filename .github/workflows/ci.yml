@@ -213,6 +213,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p ${PORT} ${USERNAME}@${HOST} bash -s << EOF
             set -e
+            export DOCKER_USERNAME="${DOCKER_USER}"
 
             # Create project directory if it doesn't exist
             if [ ! -d ~/project-grap ]; then
@@ -228,29 +229,33 @@ jobs:
                 cp .env.production.example .env
                 echo "⚠️  WARNING: Please configure .env file with production values!"
               fi
-
-              echo "🐋 Setting up docker-compose..."
-              cp docker-compose.prod.yml docker-compose.yml
             else
               cd ~/project-grap
               echo "📥 Pulling latest code..."
               git pull origin master
             fi
 
+            # Always ensure we're using the production docker-compose
+            echo "🐋 Updating docker-compose configuration..."
+            cp docker-compose.prod.yml docker-compose.yml
+
             echo "🐋 Pulling latest Docker images..."
-            docker-compose pull
+            docker-compose pull app
 
             echo "⏬ Stopping current containers..."
             docker-compose down
 
-            echo "⏫ Starting containers with new images..."
-            docker-compose up -d
+            echo "⏫ Starting containers with new images (no build)..."
+            docker-compose up -d --no-build
 
             echo "🧹 Cleaning up old Docker images..."
             docker image prune -af
 
             echo "📊 Container status:"
             docker-compose ps
+
+            echo "📝 Application logs (last 20 lines):"
+            docker-compose logs --tail=20 app
 
             echo "✅ Deployment completed successfully!"
           EOF

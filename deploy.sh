@@ -8,7 +8,6 @@ set -e  # Exit on error
 echo "🚀 Starting deployment..."
 
 # Configuration
-DOCKER_USERNAME="${DOCKER_USERNAME:-your-docker-username}"
 APP_DIR="/home/$(whoami)/project-grap"
 
 # Colors for output
@@ -19,17 +18,25 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}📁 Navigating to application directory...${NC}"
 cd "$APP_DIR"
 
+# Load environment variables from .env
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | grep DOCKER_USERNAME | xargs)
+fi
+
 echo -e "${YELLOW}🔄 Pulling latest code from Git...${NC}"
 git pull origin master
 
+echo -e "${YELLOW}🐋 Updating docker-compose configuration...${NC}"
+cp docker-compose.prod.yml docker-compose.yml
+
 echo -e "${YELLOW}🐋 Pulling latest Docker images...${NC}"
-docker-compose pull
+docker-compose pull app
 
 echo -e "${YELLOW}⏬ Stopping current containers...${NC}"
 docker-compose down
 
-echo -e "${YELLOW}⏫ Starting containers with new images...${NC}"
-docker-compose up -d
+echo -e "${YELLOW}⏫ Starting containers with new images (no build)...${NC}"
+docker-compose up -d --no-build
 
 echo -e "${YELLOW}🧹 Cleaning up old Docker images...${NC}"
 docker image prune -af --filter "until=24h"
